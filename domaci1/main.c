@@ -31,7 +31,7 @@ int main(){
       bod_studenta[position] = c - '0'; // c - '0' kako se char ne bi spremio kao ascii kod
       position++; // povecavanje indexa arraya
     } else if(c == '\n'){
-      br_bod = bod_studenta[0]*pow(10, position-1) + bod_studenta[1]*pow(10, position-2); // s obzirom da su samo dvije znamenke, ovaj nacin je efikasniji nego da radimo preko for loopa+
+      br_bod = bod_studenta[0]*pow(10, position-1) + bod_studenta[1]*pow(10, position-2); // s obzirom da su samo dvije znamenke, ovaj nacin je efikasniji nego da radimo preko for loopa
       br_bod > max_br_bod && (max_br_bod = br_bod);
       bod_studenta[0] = 0;
       bod_studenta[1] = 0;
@@ -40,8 +40,8 @@ int main(){
     }
   }
   // vrijednosti bod_studenta i position-a pamte vrijednost posljednje linije file-a
-  // ali kako se ne mogu pribrojiti ukupnom zbroju unutar while-a zbog EOF-a, to radimo nakon while-a
-  br_bod = bod_studenta[0]*pow(10, position-1) + bod_studenta[1]*pow(10, position-2); // s obzirom da su samo dvije znamenke, ovaj nacin je efikasniji nego da radimo preko for loopa+
+  // ali kako se ne moze provjeriti max_br_bod unutar while-a zbog EOF-a, to radimo nakon while-a
+  br_bod = bod_studenta[0]*pow(10, position-1) + bod_studenta[1]*pow(10, position-2); // s obzirom da su samo dvije znamenke, ovaj nacin je efikasniji nego da radimo preko for loopa
   br_bod > max_br_bod && (max_br_bod = br_bod);
 
   rewind(f);
