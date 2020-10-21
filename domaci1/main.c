@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <time.h>
 #define MAX_NAME 255
 
 typedef struct student{
@@ -11,7 +10,7 @@ typedef struct student{
 } Student;
 
 int main(){
-  
+
   FILE *f = fopen("studenti.txt", "r");
   if(f == NULL){
     printf("Greska pri ucitavanju datoteke.\n");
