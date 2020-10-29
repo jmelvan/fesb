@@ -41,7 +41,7 @@ int del(char *name, char *surname, int years, Position head) {
 		head = head->next;
 	}
 	last->next = head->next;
-	free(last);
+	free(head);
 	return -1;
 }
 

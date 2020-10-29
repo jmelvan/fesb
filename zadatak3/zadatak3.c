@@ -37,8 +37,8 @@ int main() {
 	del("Ante", "Kuic", 19, head);
 	show(head);
 
-  addAfter("Melvan", "Marin", "Ivandic", 31, head);
-  show(head);
+	addAfter("Melvan", "Marin", "Ivandic", 31, head);
+	show(head);
 	
 	addBefore("Ivandic", "Drasko", "Lukas", 35, head);
 	show(head);
