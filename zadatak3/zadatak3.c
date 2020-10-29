@@ -1,8 +1,17 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define MAX 30
 
 typedef struct Osoba* Position;
+struct Osoba {
+	char name[MAX];
+	char surname[MAX];
+	int years;
+	Position next;
+};
+
 int prepend(char name[], char surname[], int years, Position head);
 int show(Position head);
 int append(char name[], char surname[], int years, Position head);
@@ -13,60 +22,119 @@ int addBefore(char after_surname[], char name[], char surname[], int years, Posi
 int sort(Position head);
 int readFromFile(char file[], Position head);
 int writeToFile(char file[], Position head);
-
-struct Osoba {
-	char name[30];
-	char surname[30];
-	int years;
-	Position next;
-};
+int delAll(Position head);
 
 int main() {
 	Position head = NULL;
 	head = (Position)malloc(sizeof(struct Osoba));
 	head->next = NULL;
+	int odabir = 11, years = 0, loop = 1;
+	char name[MAX], surname[MAX], before[MAX];
 
-	append("Ante", "Kuic", 19, head);
-	prepend("Jakov", "Melvan", 20, head);
-	append("John", "Doe", 23, head);
-	show(head);
+	printf("Odabir radnje:\n"
+		"Append:\t\t1"
+		"\nPrepend:\t2"
+		"\nShow:\t\t3"
+		"\nSearch:\t\t4"
+		"\nDelete:\t\t5"
+		"\nAdd before:\t6"
+		"\nAdd after:\t7"
+		"\nSort:\t\t8"
+		"\nRead from file:\t9"
+		"\nWrite to file:\t0"
+		"\nExit program: -1\n");
 
-	Position searched = search("Melvan", head);
-	searched != NULL && printf("\nPretrazena osoba: %s %s %d\n\n", searched->name, searched->surname, searched->years);
-	
-	del("Ante", "Kuic", 19, head);
-	show(head);
 
-	addAfter("Melvan", "Marin", "Ivandic", 31, head);
-	show(head);
-	
-	addBefore("Ivandic", "Drasko", "Lukas", 35, head);
-	show(head);
-	
-	sort(head);
-	show(head);
-	
-	readFromFile("studenti.txt", head);
-	show(head);
+	while (loop) {
+		printf("\nOdaberite radnju: ");
+		scanf(" %d", &odabir);
 
-	writeToFile("studenti.txt", head);
+		switch (odabir) {
+			case 0:
+				writeToFile("studenti.txt", head);
+			break;
+			case 1:
+				printf("Unesite korisnika (ime prezime godine): ");
+				scanf(" %s %s %d", name, surname, &years);
+				append(name, surname, years, head);
+			break;
+			case 2:
+				printf("Unesite korisnika (ime prezime godine): ");
+				scanf(" %s %s %d", name, surname, &years);
+				prepend(name, surname, years, head);
+			break;
+			case 3:
+				show(head);
+			break;
+			case 4:
+				printf("Unesite prezime: ");
+				scanf(" %s", surname);
+				Position searched = search(surname, head);
+				searched != NULL && printf("\nPretrazena osoba: %s %s %d\n\n", searched->name, searched->surname, searched->years);
+			break;
+			case 5:
+				printf("Unesite korisnika (ime prezime godine): ");
+				scanf(" %s %s %d", name, surname, &years);
+				del(name, surname, years, head);
+			break;
+			case 6:
+				printf("Unesite prezime prije kojega zelite dodati: ");
+				scanf("%s", before);
+				getchar();
+				printf("\nUnesite korisnika (ime prezime godine): ");
+				scanf("%s %s %d", name, surname, &years);
+				getchar();
+				addBefore(before, name, surname, years, head);
+			break;
+			case 7:
+				printf("Unesite prezime nakon kojega zelite dodati: ");
+				scanf("%s", before);
+				getchar();
+				printf("\nUnesite korisnika (ime prezime godine): ");
+				scanf("%s %s %d", name, surname, &years);
+				getchar();
+				addAfter(before, name, surname, years, head);
+			break;
+			case 8:
+				sort(head);
+			break;
+			case 9:
+				readFromFile("studenti.txt", head);
+			break;
+			case -1:
+				loop = 0;
+			break;
+		}
+	}
 
+	delAll(head);
 	system("pause");
 	return 0;
 }
 
-/* 
+int delAll(Position head) {
+	if (head == NULL) return -1;
+	Position temp = NULL;
+	while (head->next != NULL) {
+		temp = head;
+		head = head->next;
+		free(temp);
+	}
+	return 0;
+}
+
+/*
 	INPUT: filename, Position head
 	RETURN: success or error
 	DESCRIPTION: zapisuje vezanu listu u file
 */
-int writeToFile(char file[], Position head){
+int writeToFile(char file[], Position head) {
 	FILE *f = fopen(file, "w");
-	if(f == NULL){
-    printf("Greska pri ucitavanju datoteke.\n");
-    return -1;
-  }
-	if(head != NULL){
+	if (f == NULL) {
+		printf("Greska pri ucitavanju datoteke.\n");
+		return -1;
+	}
+	if (head->next != NULL) {
 		while (head->next != NULL) {
 			head = head->next;
 			fprintf(f, "%s %s %d\n", head->name, head->surname, head->years);
@@ -77,43 +145,47 @@ int writeToFile(char file[], Position head){
 	return 0;
 }
 
-/* 
+/*
 	INPUT: filename, Position head
 	RETURN: success or error
 	DESCRIPTION: ucitava studente iz file-a na kraj vezane liste
 */
-int readFromFile(char file[], Position head){
+int readFromFile(char file[], Position head) {
 	FILE *f = fopen(file, "r");
-	if(f == NULL){
-    printf("Greska pri ucitavanju datoteke.\n");
-    return -1;
-  }
+	if (f == NULL) {
+		printf("Greska pri ucitavanju datoteke.\n");
+		return -1;
+	}
 	char name[30], surname[30];
 	int years;
-	while(!feof(f)){
-		fscanf(f, " %s %s %d", name, surname, &years);
-		append(name, surname, years, head);
+	fseek(f, 0, SEEK_END);
+	unsigned long len = (unsigned long)ftell(f);
+	if (len > 0) {
+		while (!feof(f)) {
+			fscanf(f, " %s %s %d", name, surname, &years);
+			append(name, surname, years, head);
+		}
 	}
 	fclose(f);
 	return 0;
 }
 
-/* 
+/*
 	INPUT: Position head
 	RETURN: success or error
 	DESCRIPTION: sortira vezanu listu po prezimenima
 */
-int sort(Position head){
+int sort(Position head) {
 	if (head == NULL) return -1;
 	int changed = 1;
 	Position temp = (Position)malloc(sizeof(struct Osoba));
 	Position start;
-	while(changed){
+	while (changed) {
 		changed = 0;
 		start = head;
-		while (start->next->next != NULL){
+		while (start->next->next != NULL) {
 			start = start->next;
-			if(strcmp(start->surname, start->next->surname) > 0){
+			if (strcmp(start->surname, start->next->surname) > 0) {
 				changed = 1;
 				strcpy(temp->name, start->name);
 				strcpy(temp->surname, start->surname);
@@ -131,43 +203,43 @@ int sort(Position head){
 	return 0;
 }
 
-/* 
+/*
 	INPUT: [char after_surname](Prezime nakon kojeg zelimo dodati), char name, char surname, int years, Position head
 	RETURN: success or error
 	DESCRIPTION: dodaje element iza elementa cije je prezime `after_surname`
 */
-int addAfter(char after_surname[], char name[], char surname[], int years, Position head){
-  if (head == NULL) return -1;
-  Position before = search(after_surname, head);
-  Position new = (Position)malloc(sizeof(struct Osoba));
-  strcpy(new->name, name);
+int addAfter(char after_surname[], char name[], char surname[], int years, Position head) {
+	if (head == NULL) return -1;
+	Position before = search(after_surname, head);
+	Position new = (Position)malloc(sizeof(struct Osoba));
+	strcpy(new->name, name);
 	strcpy(new->surname, surname);
 	new->years = years;
-  new->next = before->next;
-  before->next = new;
-  return 0;
+	new->next = before->next;
+	before->next = new;
+	return 0;
 }
 
-/* 
+/*
 	INPUT: [char after_surname](Prezime prije kojeg zelimo dodati), char name, char surname, int years, Position head
 	RETURN: success or error
 	DESCRIPTION: dodaje element prije elementa cije je prezime `after_surname`
 */
-int addBefore(char after_surname[], char name[], char surname[], int years, Position head){
-  if (head->next == NULL) return -1;
-  while (head->next->next != NULL && strcmp(head->next->surname, after_surname) != 0) {
+int addBefore(char after_surname[], char name[], char surname[], int years, Position head) {
+	if (head->next == NULL) return -1;
+	while (head->next->next != NULL && strcmp(head->next->surname, after_surname) != 0) {
 		head = head->next;
 	}
 	Position new = (Position)malloc(sizeof(struct Osoba));
-  strcpy(new->name, name);
+	strcpy(new->name, name);
 	strcpy(new->surname, surname);
 	new->years = years;
-  new->next = head->next;
-  head->next = new;
-  return 0;
+	new->next = head->next;
+	head->next = new;
+	return 0;
 }
 
-/* 
+/*
 	INPUT: char name, char surname, int years, Position head
 	RETURN: success or error
 	DESCRIPTION: brise element koji ima vrijednosti `name`, `surname` i `year` jednake kao one sto su proslijedene u funkciju
@@ -184,7 +256,7 @@ int del(char name[], char surname[], int years, Position head) {
 	return -1;
 }
 
-/* 
+/*
 	INPUT: char surname, Position head
 	RETURN: Position element
 	DESCRIPTION: brise element koji ima vrijednosti `name`, `surname` i `year` jednake kao one sto su proslijedene u funkciju
@@ -197,7 +269,7 @@ Position search(char surname[], Position head) {
 	return head;
 }
 
-/* 
+/*
 	INPUT: char name, char surname, int years, Position head
 	RETURN: success or error
 	DESCRIPTION: dodaje element na pocetak vezane liste
@@ -213,7 +285,7 @@ int prepend(char name[], char surname[], int years, Position head) {
 	return 0;
 }
 
-/* 
+/*
 	INPUT: char name, char surname, int years, Position head
 	RETURN: success or error
 	DESCRIPTION: dodaje element na kraj vezane liste
@@ -232,13 +304,13 @@ int append(char name[], char surname[], int years, Position head) {
 	return 0;
 }
 
-/* 
+/*
 	INPUT: Position head
 	RETURN: success or error
 	DESCRIPTION: ispisuje elemente vezane liste
 */
 int show(Position head) {
-	if(head != NULL){
+	if (head != NULL) {
 		while (head->next != NULL) {
 			head = head->next;
 			printf("%s %s %d, ", head->name, head->surname, head->years);
