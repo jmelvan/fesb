@@ -163,38 +163,33 @@ Polynom* readFromFile(char filename[FILENAME], int *numberOfPols){
 }
 
 Polynom multiply(Polynom *pols, int numberOfPols){
-  Polynom forSum = (Polynom)malloc(sizeof(struct Node)), p1, p2;
-  Polynom *sumfor = (Polynom*)malloc((numberOfPols-1)*sizeof(Polynom));
+  Polynom p1, p2;
+  Polynom *forSum = (Polynom*)malloc((numberOfPols-1)*sizeof(Polynom));
   for(int i = 0; i < numberOfPols-1; i++){
     Polynom n = (Polynom)malloc(sizeof(struct Node));
     n->next = NULL;
-    sumfor[i] = n;
+    forSum[i] = n;
   }
   Polynom *start = pols;
-  forSum->next = NULL;
   int c, e, s;
-  for(int i = 0; i < numberOfPols; i++){
-    for(int j = i+1; j < numberOfPols; j++){
-      p1 = (i == 0) ? start[i]->next : sumfor[i-1];
-      p2 = start[j]->next;
-      while(p1 != NULL){
-        while(p2 != NULL){
-          c = p1->c * p2->c;
-          e = p1->e + p2->e;
-          s = p1->s * p2->s;
-          addPolynom(c, e, s, sumfor[i]);
-          p2 = p2->next;
-        }
-        p2 = start[j]->next;
-        p1 = p1->next;
+  for(int i = 0; i < numberOfPols-1; i++){
+    p1 = (i == 0) ? start[i]->next : forSum[i-1]->next;
+    p2 = start[i+1]->next;
+    while(p1 != NULL){
+      while(p2 != NULL){
+        c = p1->c * p2->c;
+        e = p1->e + p2->e;
+        s = p1->s * p2->s;
+        addPolynom(c, e, s, forSum[i]);
+        p2 = p2->next;
       }
+      p2 = start[i+1]->next;
+      p1 = p1->next;
     }
-    show(sumfor[i]);
-    sum(sumfor[i]);
-    show(sumfor[i]);
+    sum(forSum[i]);
   }
-  sum(sumfor[numberOfPols-2]);
-  return sumfor[numberOfPols-2];
+  sum(forSum[numberOfPols-2]);
+  return forSum[numberOfPols-2];
 }
 
 Polynom addition(Polynom* pols, int numberOfPols){
