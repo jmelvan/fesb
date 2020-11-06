@@ -1,3 +1,11 @@
+/*
+  Polinomi mogu biti svih oblika (npr. 2x^4 + 3x - 4)...
+  Ukoliko iza X-a nema '^' i vrijednost eksponenta, podrazumijeva se da je x na prvu, odnosno x^1
+  Program obavlja operaciju i oduzimanja polinoma ukoliko neki polinom sadrži negativne članove
+  Broj polinoma se ne ogranicava na 2, vec je program napravljen da ih moze racunati dok ne nestane memorije
+  Svaki polinom ide u svoj red, podrazumijeva se da nece biti praznih redova izmedu polinoma
+*/ 
+
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,17 +13,19 @@
 
 typedef struct Node * Polynom;
 struct Node{
-  int c, e, s; // koeficijent i eksponent
+  int c, e, s; // koeficijent, eksponent i sign
   Polynom next;
 };
 
 Polynom* readFromFile(char filename[FILENAME], int *numberOfPols);
+int getNumberOfPolynoms(char *buffer);
+int parseData(Polynom* pols, char *buffer);
 int addPolynom(int c, int e, int s, Polynom head);
 int display(Polynom *pols, int n);
 int show(Polynom head);
 Polynom multiply(Polynom* pols, int numberOfPols);
-int sum(Polynom forSum);
 Polynom addition(Polynom* pols, int numberOfPols);
+int sum(Polynom forSum);
 int deleteAll(Polynom* pols, int numberOfPols);
 
 int main(){
@@ -67,20 +77,11 @@ int main(){
   return 0;
 }
 
-int deleteAll(Polynom* pols, int numberOfPols){
-  Polynom *start = pols;
-  Polynom head = NULL, temp = NULL;
-  for(int i = 0; i < numberOfPols; i++){
-    head = start[i];
-    while (head->next != NULL) {
-      temp = head;
-      head = head->next;
-      free(temp);
-    }
-  }
-  return 0;
-}
-
+/*
+	INPUT: [char filename](Ime datoteke), [int* numberOfPols](pokazivac na broj polinoma kako bi mogli izmjeniti varijablu u mainu)
+	RETURN: array pokazivaca na polinome
+	DESCRIPTION: ucitavanje polinoma iz file-a, te stvaranje alociranog niza za pohranjivanje head elemenata pojedinih polinoma
+*/
 Polynom* readFromFile(char filename[FILENAME], int *numberOfPols){
   FILE *f = fopen(filename, "r");
   if(f == NULL) return NULL;
@@ -93,23 +94,34 @@ Polynom* readFromFile(char filename[FILENAME], int *numberOfPols){
   }
   rewind(f);
 
-  int lines = 1;
-  while(!feof(f)){
-    fgetc(f) == '\n' && lines++;
-  }
-  rewind(f);
+  char *buffer = (char*)malloc(len*sizeof(char));
+  fread(buffer, sizeof(char), len, f);
 
-  Polynom *pols = (Polynom*)malloc(lines*sizeof(Polynom));
-  for(int i = 0; i < lines; i++){
+  int nPolynoms = getNumberOfPolynoms(buffer); // broj linija odnosno polinoma (potrebno za alokaciju)
+  *numberOfPols = nPolynoms; // kako bi u mainu znali koliko ima polinoma (za koristenje for petlje itd...)
+
+  Polynom *pols = (Polynom*)malloc(nPolynoms*sizeof(Polynom)); // koristen niz zbog indeksiranja, olaksava programiranje
+  for(int i = 0; i < nPolynoms; i++){ // inicijalizacija head elemenata
     Polynom n = (Polynom)malloc(sizeof(struct Node));
     n->next = NULL;
     pols[i] = n;
   }
-  *numberOfPols = lines;
 
-  int pol = 0, type = 0, c = 0, e = 0, s = 1;
-  char ch;
-  while((ch = fgetc(f)) != EOF){
+  parseData(pols, buffer); // parsiranje buffera, spremanje polinoma u vezane liste
+  
+  fclose(f);
+  return pols;
+}
+
+/*
+	INPUT: [Polynom *pols](Niz head elemenata), [char *buffer](sadrzaj file-a)
+	RETURN: error or success
+	DESCRIPTION: parsiranje polinoma i spremanje u strukture
+*/
+int parseData(Polynom *pols, char *buffer){
+  int pol = 0, type = 0, c = 0, e = 0, s = 1, i = 0;
+  char ch = buffer[0];
+  while(ch != '\0'){
     if(ch != '\n'){
       switch(ch){
         case '+':
@@ -131,6 +143,7 @@ Polynom* readFromFile(char filename[FILENAME], int *numberOfPols){
           s = -1;
         break;
         case 'x': 
+          c == 0 && c++;
           e = 1;
         break;
         case ' ':
@@ -155,13 +168,37 @@ Polynom* readFromFile(char filename[FILENAME], int *numberOfPols){
       s = 1;
       type = 0;
     }
+    ch = buffer[++i];
   }
   addPolynom(c, e, s, pols[pol]); // ako je EOF onda se nece dodati zadnji element u listu bez ove linije
-  
-  fclose(f);
-  return pols;
+  return 0;
 }
 
+/*
+	INPUT: [char *buffer](sadrzaj file-a)
+	RETURN: [int](broj polinoma)
+	DESCRIPTION: brojanje polinoma iz file-a
+*/
+int getNumberOfPolynoms(char *buffer){
+  char c = buffer[0];
+  int polynoms = 1, i = 0;
+  while(c != '\0'){
+    c == '\n' && polynoms++;
+    c = buffer[++i];
+  }
+  return polynoms;
+}
+
+/*
+	INPUT: [Polynom *pols](Niz head elemenata), [int numberOfPols](broj polinoma)
+	RETURN: [Polynom](Rezultat mnozenja)
+	DESCRIPTION: mnozenje polinoma
+    npr.
+      3  \
+          (6x) \
+      2x /      (12x^4+18x)
+      2x^3+3 __/
+*/
 Polynom multiply(Polynom *pols, int numberOfPols){
   Polynom p1, p2;
   Polynom *forSum = (Polynom*)malloc((numberOfPols-1)*sizeof(Polynom));
@@ -192,6 +229,11 @@ Polynom multiply(Polynom *pols, int numberOfPols){
   return forSum[numberOfPols-2];
 }
 
+/*
+	INPUT: [Polynom *pols](Niz head elemenata), [int numberOfPols](broj polinoma)
+	RETURN: [Polynom](Rezultat zbrajanja)
+	DESCRIPTION: stvara novi niz u kojeg spremi sortirano clanove za zbrajanje
+*/
 Polynom addition(Polynom* pols, int numberOfPols){
   Polynom forSum = (Polynom)malloc(sizeof(struct Node)), pol;
   forSum->next = NULL;
@@ -207,6 +249,17 @@ Polynom addition(Polynom* pols, int numberOfPols){
   return forSum;
 }
 
+/*
+	INPUT: [Polynom *forSum](Vezana lista polinoma za zbrajanje)
+	RETURN: error or success
+	DESCRIPTION: zbrajanje polinoma
+    npr.
+      2x^2 + 3x^2 + 4x^2 + 3
+      |_________| 
+      5x^2 + 4x^2 + 3
+      |_________|
+      9x^2 + 3
+*/
 int sum(Polynom forSum){
   Polynom head = forSum->next, last = forSum;
   Polynom forDel = NULL;
@@ -229,6 +282,11 @@ int sum(Polynom forSum){
   return 0;
 }
 
+/*
+	INPUT: coefficient, exponent, sign, [Polynom head](head element polinoma kojem element pripada)
+	RETURN: success or error
+	DESCRIPTION: sortirani unos polinoma
+*/
 int addPolynom(int c, int e, int s, Polynom head){
   Polynom after = head->next;
   while(after != NULL && e < after->e){
@@ -244,6 +302,11 @@ int addPolynom(int c, int e, int s, Polynom head){
   return 0;
 }
 
+/*
+	INPUT: [Polynom *pols](Niz head elemenata), [int n](broj polinoma)
+	RETURN: success or error
+	DESCRIPTION: razdvajanje na polinoma po redovima, kruzenje kroz niz head elemenata i slanje na ispis
+*/
 int display(Polynom *pols, int n){
   Polynom *start = pols;
   for(int i = 0; i < n; i++){
@@ -253,6 +316,11 @@ int display(Polynom *pols, int n){
   return 0;
 }
 
+/*
+	INPUT: [Polynom head](head element polinoma)
+	RETURN: success or error
+	DESCRIPTION: ispisivanje polinoma, tj vezane liste
+*/
 int show(Polynom head){
   if(head != NULL){
     int counter = 0;
@@ -267,4 +335,25 @@ int show(Polynom head){
 		return 0;
 	}
 	return -1;
+}
+
+/*
+	INPUT: [Polynom *pols](Niz head elemenata), [int numberOfPols](broj polinoma)
+	RETURN: success or error
+	DESCRIPTION: brisanje polinoma iz memorije
+*/
+int deleteAll(Polynom* pols, int numberOfPols){
+  Polynom *start = pols;
+  Polynom head = NULL, temp = NULL;
+  for(int i = 0; i < numberOfPols; i++){
+    head = start[i];
+    while (head->next != NULL) {
+      temp = head;
+      head = head->next;
+      free(temp);
+    }
+  }
+  free(head);
+  free(pols);
+  return 0;
 }
