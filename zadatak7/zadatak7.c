@@ -40,7 +40,7 @@ int display(List);
 int deleteAll(List);
 
 int main(){
-  List postfix = readFromFile("izrazi.txt");
+  List postfix = readFromFile("infix.txt");
   display(postfix);
   int result = calculate_result(postfix);
   printf("\n\nRezultat: %d\n", result);
