@@ -1,3 +1,9 @@
+/*
+  Programi su pisani u Visual Studio Code-u, te compilani sa gcc compilerom koristeći C/C++ ekstenziju...
+  Primjetio sam da se ponekad javlja greška u Visual Studiu iako preko VS Code ekstenzije normalno radi.
+  Takve greške nažalost ne mogu ispraviti jer ne koristim Visual Studio.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
