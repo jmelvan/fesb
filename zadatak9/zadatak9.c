@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define BUFFER 255
 
 typedef struct Node * Edge;
 struct Node{
