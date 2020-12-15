@@ -12,7 +12,7 @@ Edge newEdge();
 Edge addNew(Edge);
 Edge add(Edge, int);
 Edge search(Edge, int);
-Edge findMax(Edge);
+Edge findMin(Edge);
 Edge deleteInput(Edge);
 Edge delete(Edge, int);
 int searchInput();
@@ -91,13 +91,13 @@ Edge delete(Edge position, int n){
       free(position);
       return temp;
     } else if(position->L == NULL){
-      Edge temp = position->L;
+      Edge temp = position->R;
       free(position);
       return temp;
     } else {
-      Edge temp = findMax(position->L);
+      Edge temp = findMin(position->R);
 			position->n = temp->n;
-			position->L = delete(position->L, temp->n);
+			position->R = delete(position->R, temp->n);
     }
   }
   return position;
@@ -124,8 +124,8 @@ Edge search(Edge position, int n){
   return position;
 }
 
-Edge findMax(Edge position){
-  if(position->R != NULL) return findMax(position->R);
+Edge findMin(Edge position){
+  if(position->L != NULL) return findMin(position->L);
   return position;
 }
 
