@@ -11,19 +11,16 @@ int startUserInterface(user *);
 
 int start(){
 	user* users = initTable();
-	
 	loadUsers(users);
 	loadWorkingHours(users);
-	printf("Program uspijesno ucitan...\n\nUcitani korisnici:");
+	printf("Program uspijesno ucitan...\n\nUcitani korisnici:\n");
 	displayUsers(users);
 	startUserInterface(users);
-	
+	deleteAll(users);
 	return 0;
 }
 
-int startUserInterface(user* users)
-{
-
+int startUserInterface(user* users) {
 	if (users == NULL) return -1;
 
 	int opcija = 1,
@@ -35,20 +32,16 @@ int startUserInterface(user* users)
 		 kraj[64]; // ZA UNOS
 
 	/**/
-	while (opcija > 0)
-	{
-		printf("-------------------------------------------------\n");
-		printf("\nOpcije: \n1 - Ispisi radne sate za korisnika\n"
+	while (opcija > 0) {
+		printf("\n\nOpcije: \n1 - Ispisi radne sate za korisnika\n"
 			"2 - Ispisi korisnike\n3 - Export izvjestaja\n"
 			"4 - Ocisti ekran\n5 - Zavrsi s programom\n"
 			"\nUnesite opciju: ");
 
 		scanf(" %d", &opcija);
 
-		switch (opcija)
-		{
-		case 1:
-		{
+		switch (opcija) {
+		case 1: {
 			printf("\nOdabrali ste opciju za ispis radnih sati.\n"
 				"Unesite ID korisnika: ");
 			scanf(" %d", &id);
@@ -58,8 +51,7 @@ int startUserInterface(user* users)
 				break;
 			}
 			else {
-			
-				printf("Uredu, odabrali ste korisnika %s %s ( %d ).\n\n", temp->name, temp->surname, id);
+				printf("\nUredu, odabrali ste korisnika %s %s ( %d ).\n", temp->name, temp->surname, id);
 				printf("Unesite pocetni i kranji datum za ispis radnih sati: \n");
 				while (ind != 0 && ind != -1) {
 					printf("Format unosa (dd.mm.gggg dd.mm.gggg): ");
@@ -74,24 +66,27 @@ int startUserInterface(user* users)
 					if (ind == 3)
 						printf("Datumi se moraju nalaziti u istoj godini sa max razmakom od 30 dana.\n");
 				}
-				printf("\nWorking days: [%s - %s]\n", poc, kraj);
+				printf("\nWorking days: [%s - %s]", poc, kraj);
 				displayDaysForUser(temp, poc, kraj);
+				ind = 1;
 
 			}
 			break;
 		}
-		case 2:
-		{
+		case 2: {
 			displayUsers(users);
 			printf("\n");
 			break;
 		}
 		case 3: {
-			printf("\nUnesite koliko je radnih sati bilo potrebno: ");
-			scanf(" %d", &id);
+			printf("\nUnesite koliko je radnih sati bilo potrebno i naziv datoteke: ");
+			printf("\n(naziv-datoteke broj-sati): ");
+			scanf(" %s %d", poc, &id);
 			if (id > 0)
 			{
-				exportReport("izvjestaj.txt", users, id);
+				exportReport(poc, users, id);
+				printf("\nU datoteku %s ispisani izvjestaji!\n"
+					"Svim korisnicima usporeden je broj sati sa potrebnim brojem sati ( %d h )", poc, id);
 			}
 			else {
 				printf("Unijeli ste negativan broj!\n");
@@ -112,15 +107,13 @@ int startUserInterface(user* users)
 	return 0;
 }
 
-int handleDates(char *buffer, char *p, char *k)
-{
+int handleDates(char *buffer, char *p, char *k) {
 	if (buffer == NULL) return -1;
 	if (strlen(buffer) == 0) return -1;
 	int br[6] = { 0 },
 		count = 0,
 		i = 0;
-	while (sscanf(buffer, "%d.%d.%d%n", &br[i], &br[i+1], &br[i+2], &count))
-	{
+	while (sscanf(buffer, "%d.%d.%d%n", &br[i], &br[i+1], &br[i+2], &count)) {
 		buffer += count;
 		i += 3;
 		if (i >= 6) break;

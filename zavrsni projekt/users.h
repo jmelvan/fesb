@@ -40,3 +40,12 @@ int sortedInsertion(user, user);
 
 // function to display all workers
 int displayUsers(user*);
+
+//delete
+int deleteAll(user*);
+
+// delete single user
+int delete(user);
+
+//delete hours for user
+int deleteHours(user);

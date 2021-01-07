@@ -1,0 +1,6 @@
+Name      Surname        Total Hours         Total Minutes       Difference          
+
+Duje      Senta            8 hrs              10 mins              +3.17 hrs
+Jakov     Melvan          17 hrs              48 mins             +12.82 hrs
+Mario     Jelic            0 hrs               0 mins              -5.00 hrs
+Ante      Kuic             8 hrs               2 mins              +3.03 hrs

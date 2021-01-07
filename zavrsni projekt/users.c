@@ -91,3 +91,39 @@ int displayUsers(user* users){
   }
   return 0;
 }
+
+int deleteAll(user* users) {
+	if (users == NULL) return -1;
+	for (int i = 0; i < TABLE_SIZE; i++)
+	{
+		delete(users[i]);
+		free(users[i]); // free "head"
+	}
+	return 0;
+}
+
+int delete(user root) {
+	if (root == NULL) return -1;
+
+	while (root != NULL && root->next != NULL)
+	{
+		user temp = root->next;
+		root = root->next->next;
+		deleteHours(temp);
+		free(temp->wh); // free head;
+		free(temp); // free user
+	}
+	return 0;
+}
+
+int deleteHours(user root) {
+	if (root == NULL) return -1;
+	workingHours head = root->wh; // head
+	while (head != NULL && head->next != NULL)
+	{
+		workingHours temp = head->next;
+		head = head->next->next;
+		free(temp);
+	}
+	return 0;
+}
