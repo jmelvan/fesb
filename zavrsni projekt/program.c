@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "users.h"
 #include "device.h"
 #include "helpers.h"
 #include "program.h"
 
-int startUserInterface(user*);
-int handleDates(char *, char *, char *);
-int dateDifference(int, int, int, int, int, int);
+int startUserInterface(user *);
+
 
 int start(){
 	user* users = initTable();
@@ -17,6 +17,7 @@ int start(){
 	printf("Program uspijesno ucitan...\n\nUcitani korisnici:");
 	displayUsers(users);
 	startUserInterface(users);
+	
 	return 0;
 }
 
