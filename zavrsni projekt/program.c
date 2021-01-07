@@ -31,7 +31,6 @@ int startUserInterface(user* users) {
 		 poc[64],
 		 kraj[64]; // ZA UNOS
 
-	/**/
 	while (opcija > 0) {
 		printf("\n\nOpcije: \n1 - Ispisi radne sate za korisnika\n"
 			"2 - Ispisi korisnike\n3 - Export izvjestaja\n"

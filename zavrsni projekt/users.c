@@ -79,12 +79,12 @@ int displayUsers(user* users){
     user temp = users[i];
     while(temp->next != NULL){
         printf(
-            "%d.\t\t%d\t\t%d\t\t%s\t\t%s\n",
-            i,
-            calculateHashKey(temp->next->id),
-            temp->next->id,
-            temp->next->name,
-            temp->next->surname
+          "%d.\t\t%d\t\t%d\t\t%s\t\t%s\n",
+          i,
+          calculateHashKey(temp->next->id),
+          temp->next->id,
+          temp->next->name,
+          temp->next->surname
         );
         temp = temp->next;
     }
@@ -93,37 +93,34 @@ int displayUsers(user* users){
 }
 
 int deleteAll(user* users) {
-	if (users == NULL) return -1;
-	for (int i = 0; i < TABLE_SIZE; i++)
-	{
-		delete(users[i]);
-		free(users[i]); // free "head"
-	}
-	return 0;
+  if (users == NULL) return -1;
+  for (int i = 0; i < TABLE_SIZE; i++){
+    delete(users[i]);
+    free(users[i]); // free "head"
+  }
+  return 0;
 }
 
 int delete(user root) {
-	if (root == NULL) return -1;
+  if (root == NULL) return -1;
 
-	while (root != NULL && root->next != NULL)
-	{
-		user temp = root->next;
-		root = root->next->next;
-		deleteHours(temp);
-		free(temp->wh); // free head;
-		free(temp); // free user
-	}
-	return 0;
+  while (root != NULL && root->next != NULL){
+    user temp = root->next;
+    root = root->next->next;
+    deleteHours(temp);
+    free(temp->wh); // free head;
+    free(temp); // free user
+  }
+  return 0;
 }
 
 int deleteHours(user root) {
-	if (root == NULL) return -1;
-	workingHours head = root->wh; // head
-	while (head != NULL && head->next != NULL)
-	{
-		workingHours temp = head->next;
-		head = head->next->next;
-		free(temp);
-	}
-	return 0;
+  if (root == NULL) return -1;
+  workingHours head = root->wh; // head
+  while (head != NULL && head->next != NULL){
+    workingHours temp = head->next;
+    head = head->next->next;
+    free(temp);
+  }
+  return 0;
 }

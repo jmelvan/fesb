@@ -29,7 +29,7 @@ int fillWorkingTime(int);
 int showedUp(int, int, int, int);
 
 // print that worker didn't show up on specified date
-int didntShowUp(int, int, int, int);
+int didntShowUp(int, int, int);
 
 // function to export report of all workers and their working hours
 int exportReport(char* ,user* , int);
