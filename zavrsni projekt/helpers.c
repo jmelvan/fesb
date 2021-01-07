@@ -6,7 +6,7 @@
 #include "helpers.h"
 
 // lookup table for days in month
-const int days_in_month[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+const int days_in_month[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
 int calculateHashKey(int user_id){
   int hash = 0, count = user_id;
@@ -136,4 +136,25 @@ int exportReport(char* filename, user* users, int margin){
 
   fclose(f);
   return 0;
+}
+
+int dateDifference(int fd, int fm, int fy, int sd, int sm, int sy)
+{
+	if (fd < 0 || fm < 0 || fy < 0 || sd < 0 || sm < 0 || sy < 0) return -1;
+	if (fd > days_in_month[fm] || sd > days_in_month[sm]) return -1;
+	if (fm > 12 || sm > 12) return -1;
+	if (fy != sy) return -1; 
+	if (fm > sm) return -1; 
+	if (fm == sm)
+	{
+		if (fd > sd) return -1; 
+		else return 0;
+	}
+	else {
+		if (fm + 1 != sm) return -1;
+		int days = days_in_month[fm] - fd;
+		days += sd;
+		if (days > 30) return -1;
+	}
+	return 0;
 }

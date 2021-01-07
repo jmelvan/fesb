@@ -4,5 +4,6 @@
 
 int main(){
   start();
+  system("pause");
   return 0;
 }

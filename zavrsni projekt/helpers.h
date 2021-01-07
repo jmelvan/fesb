@@ -33,3 +33,6 @@ int didntShowUp(int, int, int, int);
 
 // function to export report of all workers and their working hours
 int exportReport(char* ,user* , int);
+
+// check date difference
+int dateDifference(int, int, int, int, int, int);
