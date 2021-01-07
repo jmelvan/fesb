@@ -5,7 +5,8 @@
 #include "users.h"
 #include "helpers.h"
 
-const int days_in_month[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; // lookup table for days in month
+// lookup table for days in month
+const int days_in_month[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 int calculateHashKey(int user_id){
   int hash = 0, count = user_id;
@@ -119,7 +120,7 @@ int didntShowUp(int day, int month, int year, int weekend){
   return 0;
 }
 
-int exportDifference(char* filename, user* users, int margin){
+int exportReport(char* filename, user* users, int margin){
   FILE *f = fopen(filename, "w");
   if(f == NULL) return -1;
 
