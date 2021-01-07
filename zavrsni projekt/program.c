@@ -17,9 +17,6 @@ int start(){
 	printf("Program uspijesno ucitan...\n\nUcitani korisnici:");
 	displayUsers(users);
 	startUserInterface(users);
-	
-	/*displayDaysForUser(users[7]->next, "1.9.2020", "5.9.2020");
-	exportReport("izvjestaj.txt", users, 10);*/
 	return 0;
 }
 
