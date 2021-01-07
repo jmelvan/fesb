@@ -1,9 +1,13 @@
-### FESB
+#### FESB
 # Strukture podataka
 
 ## Prakticni rad
 
 Ideja: **Pracenje prisustva radnika na poslu**
+
+### Dummy data
+
+Podaci timbravanja uneseni su za razdoblje od 1.9.2020 do 5.9.2020.
 
 ### Realizacija:
 
