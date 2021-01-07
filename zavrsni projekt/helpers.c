@@ -108,7 +108,7 @@ int showedUp(int day, int month, int year, int ts){
   time_t t = ts;
   struct tm *showed = gmtime(&t);
   if(showed->tm_mday == day && showed->tm_mon+1 == month && showed->tm_year+1900 == year) return 1;
-  if(showed->tm_mon+1 < month || showed->tm_mday < day) return -1;
+  if(showed->tm_mon+1 < month && showed->tm_mday < day) return -1;
   return 0;
 }
 
